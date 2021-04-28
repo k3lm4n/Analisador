@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "functions.c"
+#include "functions.h"
+#include <string.h>
 
-#define  TOKID 
-
-//gcc seucodigo.c -o seuprograma.run
-int main(){
-	
-	file *ficheiro;
-    ficheiro = fopen("ficheiro.txt","r");
-
-    
-	
+int main()
+{
+    tabela *LexTable;
+    analex(0,LexTable);
 }
