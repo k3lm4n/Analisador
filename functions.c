@@ -4,7 +4,7 @@
 #include "functions.h"
 #include "tokens.c"
 
-int linha = 0;
+int linha = 1;
 
 struct tab
 {
@@ -37,6 +37,10 @@ char lerChar(FILE *farq)
 
     return fgetc(farq);
 }
+void volta_char(FILE *farq)
+{
+    fseek(farq, -2, SEEK_CUR);
+}
 void analex(int estado, tabela *LexTable)
 {
     int verifica = 1;
@@ -60,20 +64,19 @@ void analex(int estado, tabela *LexTable)
 
                 if (car == 10)
                 {
-                    //   linha++;
+                    linha++;
                 }
                 if (estado == 1)
                 {
 
                     strcpy(token, "TOKIDENTIFICADOR");
                     //lex.linha = linha;
-                    printf("%s \t %s\n", lexema, token);
+                    printf("%d \t%s   \t %s\n", linha, lexema, token);
                     //add(LexTable, lex);
-                    printf("%s \t %s\n", lexema, token);
+                    //printf("%d \t %s \t %s\n",linha, lexema, token);
                     lexema[0] = '\0';
                 }
                 car = (int)lerChar(farq);
-                fflush(stdin);
             }
         }
         if ((char)car == EOF)
@@ -112,7 +115,7 @@ void analex(int estado, tabela *LexTable)
                 strncat(lexema, &carac, 1);
                 estado = 37;
             }
-            else if (car == 38)
+            else if (car == 34)
             {
 
                 char carac = (char)car;
@@ -264,13 +267,12 @@ void analex(int estado, tabela *LexTable)
 
                 strncat(lexema, &carac, 1);
                 car = (int)lerChar(farq);
-                fflush(stdin);
             }
             if (strcmp(lexema, TOKAUTO[0]) == 0)
             {
                 strcpy(token, TOKAUTO[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -278,7 +280,7 @@ void analex(int estado, tabela *LexTable)
             {
                 strcpy(token, TOKBREAK[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -287,10 +289,9 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKCASE[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
-               
             }
             else if (strcmp(lexema, TOKCHAR[0]) == 0)
             {
@@ -298,7 +299,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKCHAR[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -306,7 +307,7 @@ void analex(int estado, tabela *LexTable)
             {
                 strcpy(token, TOKCONST[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -316,7 +317,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKCONTINUE[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -326,7 +327,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKDEFAULT[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -336,7 +337,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKDO[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -346,7 +347,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKDOUBLE[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -356,7 +357,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, TOKELSE[1]);
 
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -365,7 +366,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKENUM[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -373,7 +374,7 @@ void analex(int estado, tabela *LexTable)
             {
                 strcpy(token, TOKEXTERN[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -382,7 +383,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKFLOAT[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -391,7 +392,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKFOR[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -400,7 +401,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKGOTO[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -409,7 +410,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKIF[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -418,7 +419,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKINT[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -427,7 +428,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKLONG[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -436,7 +437,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKREGISTER[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -445,7 +446,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKRETURN[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -454,7 +455,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSHORT[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -463,7 +464,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSIGNED[0]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -472,7 +473,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSIZEOF[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -481,7 +482,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSTATIC[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -490,7 +491,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSTRUCT[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s\t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -499,7 +500,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKSWITCH[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -508,7 +509,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKTYPEDEF[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -517,7 +518,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKUNION[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -526,7 +527,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKUNSIGNED[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -534,7 +535,7 @@ void analex(int estado, tabela *LexTable)
             {
 
                 strcpy(token, TOKVOID[1]);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 // add(LexTable, lex);
                 lexema[0] = '\0';
             }
@@ -543,7 +544,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKVOLATILE[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -552,7 +553,7 @@ void analex(int estado, tabela *LexTable)
 
                 strcpy(token, TOKWHILE[1]);
                 // add(LexTable, lex);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -561,7 +562,7 @@ void analex(int estado, tabela *LexTable)
                 strcpy(token, "TOKIDENTIFICADOR");
                 //add(LexTable, lex);
 
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
                 //printf( "%d %s %s", lex.linha, lexema, token);
@@ -587,28 +588,37 @@ void analex(int estado, tabela *LexTable)
                 strncat(lexema, &carac, 1);
                 estado = 36;
             }
-            else if (strcmp(lexema, TOKMENOS[0]) == 0)
+            else
             {
-                strcpy(token, TOKMENOS[1]);
-                printf("%s \t %s\n", lexema, token);
-                lexema[0] = '\0';
-                estado = 0;
+                //volta_char(farq);
+                estado = 34;
             }
 
             break;
+        case 34:
         case 35:
         case 36:
-            if (strcmp(lexema, TOKDEC[0]) == 0)
+            volta_char(farq);
+            if (strcmp(lexema, TOKMENOS[0]) == 0)
             {
-                strcpy(token, TOKDEC[1]);
-                printf("%s \t %s\n", lexema, token);
+                strcpy(token, TOKMENOS[1]);
+
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
             else if (strcmp(lexema, TOKDECATR[0]) == 0)
             {
                 strcpy(token, TOKDECATR[1]);
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }
+            else if (strcmp(lexema, TOKDEC[0]) == 0)
+            {
+
+                strcpy(token, TOKDEC[1]);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
@@ -643,11 +653,137 @@ void analex(int estado, tabela *LexTable)
                     strcpy(token, "TOK_NINT");
                 }
 
-                printf("%s \t %s\n", lexema, token);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
             }
 
+            break;
+        case 14:
+            if (car == 43)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 15;
+            }
+            else if (car == 61)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 16;
+            }
+            else
+            {
+
+                volta_char(farq);
+
+                estado = 17;
+            }
+            break;
+        case 15:
+        case 16:
+        case 17:
+            volta_char(farq);
+            if (strcmp(lexema, TOKINC[0]) == 0)
+            {
+                strcpy(token, TOKINC[1]);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }
+            else if (strcmp(lexema, TOKSOATR[0]) == 0)
+            {
+                strcpy(token, TOKSOATR[1]);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }
+            else if (strcmp(lexema, TOKPLUS[0]) == 0)
+            {
+                strcpy(token, TOKPLUS[1]);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }
+
+            break;
+        case 49:
+        {
+            while (car != 34)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                car = (int)lerChar(farq);
+            }
+            char carac = (char)car;
+            strncat(lexema, &carac, 1);
+            //volta_char(farq);
+            estado = 50;
+        }
+        break;
+        case 50:
+        {
+            strcpy(token, "TOKSTRING");
+            printf("%d \t%s\t %s\n", linha, lexema, token);
+            lexema[0] = '\0';
+            estado = 0;
+            volta_char(farq);
+        }
+        break;
+        case 41:
+            if (car == 47)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 45;
+            }
+            else if (car == 61)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 47;
+            }
+            else if (car == 42)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 42;
+            }
+            else
+            {
+                volta_char(farq);
+                estado = 48;
+            }
+            break;
+        case 42:
+        {
+            while (car != 42)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                car = (int)lerChar(farq);
+            }
+            char carac = (char)car;
+            strncat(lexema, &carac, 1);
+            //volta_char(farq);
+            estado = 43;
+        }
+        break;
+        case 43:
+            volta_char(farq);
+            if (car != 47)
+            {
+                char carac = (char)car;
+                strncat(lexema, &carac, 1);
+                estado = 42;
+            }
+            else
+            {
+                strcpy(token, "TOKCOMENTARIO");
+                printf("%d \t%s\t %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }
             break;
 
         default:
