@@ -587,7 +587,7 @@ void analex(int estado, tabela *LexTable)
             }
             else
             {
-                //volta_char(farq);
+                volta_char(farq);
                 estado = 34;
             }
 

@@ -4,6 +4,10 @@ int main(){
 
     
     printf("ola mundo");
+    a++;
+    a--;
+    a-;
+    a-=;
     
 
 
