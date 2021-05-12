@@ -73,7 +73,21 @@ const char *TOKCOM[]={"~","TOKCOM"};
 /*OPERADORES ATRIBUIÇÃO*/
 
 const char *TOKATR[]={"=","TOKATR"};
-const char *TOKSOATR[]={"+=","TOKSOATR"};
-const char *TOKDECATR[]={"-=","TOKDECATR"};
+const char *TOKSOATR[]={"+=","TOKATR_COMPOSTA"};
+const char *TOKDECATR[]={"-=","TOKATR_COMPOSTA"};
+const char *TOKDIVCATR[]={"/=","TOKATR_COMPOSTA"};
+const char *TOKMULTCATR[]={"*=","TOKATR_COMPOSTA"};
+
+/*SIMBOLOS*/
+
+const char *TOKPS_ABERTO[]={"(","TOKPS_ABERTO"};
+const char *TOKPS_FECHADO[]={")","TOKPS_FECHADO"};
+const char *TOKCH_ABERTO[]={"{","TOKCH_ABERTO"};
+const char *TOKCH_FECHADO[]={"}","TOKCH_FECHADO"};
+const char *TOKPR_ABERTO[]={"[","TOKPR_ABERTO"};
+const char *TOKPR_FECHADO[]={"]","TOKPR_FECHADO"};
+const char *TOKVIRGULA[]={",","TOKVIRGULA"};
+const char *TOKPVIRGULA[]={";","TOKPVIRGULA"};
+
 
 

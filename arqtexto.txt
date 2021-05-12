@@ -1,6 +1,13 @@
+
+int main(){
+
+
     
-      
-       
+    printf("ola mundo");
+    
 
 
-        iuo
+
+
+
+    }
