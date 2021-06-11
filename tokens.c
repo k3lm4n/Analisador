@@ -1,37 +1,38 @@
 /*PALAVRAS RESERVADAS*/
 
-const char *TOKAUTO[]={"auto","TOKAUTO"};
-const char *TOKBREAK[]={"break","TOKBREAK"};
-const char *TOKCASE[]={"case","TOKCASE"};
-const char *TOKCHAR[]={"char","TOKCHAR"};
-const char *TOKCONST[]={"const","TOKCONST"};
-const char *TOKCONTINUE[]={"continue","TOKCONTINUE"};
-const char *TOKDEFAULT[]={"default","TOKDEFAULT"};
-const char *TOKDO[]={"do","OKDO"};
-const char *TOKDOUBLE[]={"double","TOKDOUBLE"};
-const char *TOKELSE[]={"else","TOKELSE"};
-const char *TOKENUM[]={"enum","TOKENUM"};
-const char *TOKEXTERN[]={"extern","TOKEXTERN"};
-const char *TOKFLOAT[]={"float","TOKFLOAT"};
-const char *TOKFOR[]={"for","TOKFOR"};
-const char *TOKGOTO[]={"goto","TOKGOTO"};
-const char *TOKIF[]={"if","TOKIF"};
-const char *TOKINT[]={"int","TOKINT"};
-const char *TOKLONG[]={"long","TOKLONG"};
-const char *TOKREGISTER[]={"register","TOKREGISTER"};
-const char *TOKRETURN[]={"return","TOKRETURN"};
-const char *TOKSHORT[]={"short","TOKSHORT"};
-const char *TOKSIGNED[]={"signed","TOKSIGNED"};
-const char *TOKSIZEOF[]={"sizeof","TOKSIZEOF"};
-const char *TOKSTATIC[]={"static","TOKSTATIC"};
-const char *TOKSTRUCT[]={"struct","TOKSTRUCT"};
-const char *TOKSWITCH[]={"switch","TOKSWITCH"};
-const char *TOKTYPEDEF[]={"typedef","TOKTYPEDEF"};
-const char *TOKUNION[]={"union","TOKUNION"};
-const char *TOKUNSIGNED[]={"unsigned","TOKUNSIGNED"};
-const char *TOKVOID[]={"void","TOKVOID"};
-const char *TOKVOLATILE[]={"volatile","TOKVOLATILE"};
-const char *TOKWHILE[]={"while","TOKWHILE"};
+const char *TOKAUTO[]={"auto","PALRESERVADA"};
+const char *TOKBREAK[]={"break","PALRESERVADA"};
+const char *TOKCASE[]={"case","PALRESERVADA"};
+const char *TOKCHAR[]={"char","PALRESERVADA"};
+const char *TOKCONST[]={"const","PALRESERVADA"};
+const char *TOKCONTINUE[]={"continue","PALRESERVADA"};
+const char *TOKDEFAULT[]={"default","PALRESERVADA"};
+const char *TOKDO[]={"do","PALRESERVADA"};
+const char *TOKDOUBLE[]={"double","PALRESERVADA"};
+const char *TOKELSE[]={"else","PALRESERVADA"};
+const char *TOKENUM[]={"enum","PALRESERVADA"};
+const char *TOKEXTERN[]={"extern","PALRESERVADA"};
+const char *TOKFLOAT[]={"float","PALRESERVADA"};
+const char *TOKFOR[]={"for","PALRESERVADA"};
+const char *TOKGOTO[]={"goto","PALRESERVADA"};
+const char *TOKIF[]={"if","PALRESERVADA"};
+const char *TOKINT[]={"int","PALRESERVADA"};
+const char *TOKLONG[]={"long","PALRESERVADA"};
+const char *TOKREGISTER[]={"register","PALRESERVADA"};
+const char *TOKRETURN[]={"return","PALRESERVADA"};
+const char *TOKSHORT[]={"short","PALRESERVADA"};
+const char *TOKSIGNED[]={"signed","PALRESERVADA"};
+const char *TOKSIZEOF[]={"sizeof","PALRESERVADA"};
+const char *TOKSTATIC[]={"static","PALRESERVADA"};
+const char *TOKSTRUCT[]={"struct","PALRESERVADA"};
+const char *TOKSWITCH[]={"switch","PALRESERVADA"};
+const char *TOKTYPEDEF[]={"typedef","PALRESERVADA"};
+const char *TOKUNION[]={"union","PALRESERVADA"};
+const char *TOKUNSIGNED[]={"unsigned","PALRESERVADA"};
+const char *TOKVOID[]={"void","PALRESERVADA"};
+const char *TOKVOLATILE[]={"volatile","PALRESERVADA"};
+const char *TOKWHILE[]={"while","PALRESERVADA"};
+const char *TOKINCLUDE[]={"include","PALRESERVADA"};
 
 /*OPERADORES ARITRIMÉTRICOS*/
 const char *TOKPLUS[]={"+","TOKPLUS"};
@@ -77,6 +78,7 @@ const char *TOKSOATR[]={"+=","TOKATR_COMPOSTA"};
 const char *TOKDECATR[]={"-=","TOKATR_COMPOSTA"};
 const char *TOKDIVCATR[]={"/=","TOKATR_COMPOSTA"};
 const char *TOKMULTCATR[]={"*=","TOKATR_COMPOSTA"};
+const char *TOKBITCATR[]={":","TOKATR_BIT"};
 
 /*SIMBOLOS*/
 
@@ -88,6 +90,7 @@ const char *TOKPR_ABERTO[]={"[","TOKPR_ABERTO"};
 const char *TOKPR_FECHADO[]={"]","TOKPR_FECHADO"};
 const char *TOKVIRGULA[]={",","TOKVIRGULA"};
 const char *TOKPVIRGULA[]={";","TOKPVIRGULA"};
+const char *TOKPERCENT[]={"\%","TOKPERCENT"};
 
 
 
