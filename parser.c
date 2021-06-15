@@ -1,71 +1,150 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "functions.h"
-//#include "tokens.c"
-struct tabLex
-{
-    char token[50];
-    char lexema[50];
-    char linha[50];
-};
-typedef struct tabLex TabelaLex;
 
-void sintatico()
+typedef struct lex
+{
+    char *token;
+    char *lexema;
+    char *linha;
+} Lex;
+typedef struct lista
+{
+    Lex tab;
+    struct lista *prox;
+    /* data */
+} Lista;
+
+Lista *init()
+{
+    Lista *li = malloc(sizeof(Lista));
+    li->prox = NULL;
+    return li;
+}
+Lista *insere(Lista *li, Lex tab)
+{
+    Lista *novo = init();
+    Lista *aux = li;
+    novo->tab = tab;
+
+    if (aux == NULL)
+    {
+        li = novo;
+
+        /* code */
+    }
+    else
+    {
+        while (aux->prox != NULL)
+        {
+            aux = aux->prox;
+        }
+        aux->prox = novo;
+    }
+
+    return li;
+}
+void imp(Lista *li)
+{
+    Lista *aux = li;
+
+    while (aux != NULL)
+    {
+        printf("%s %s %s\n", aux->tab.linha, aux->tab.lexema, aux->tab.token);
+        aux = aux->prox;
+    }
+}
+
+Lista *digital(Lista *li)
 {
     FILE *pont_arq;
     pont_arq = fopen("LexTable.txt", "r");
+    Lex tab;
 
-    while (fscanf(pont_arq, "%s,%s,%s ", linha, , lexema) != EOF)
+    const char s[2] = " ";
+    char *token;
+    char s1[200];
+    char s2[200];
+    char s3[200];
+
+    while (fscanf(pont_arq, "%s %s %s", s1, s2, s3) != EOF)
     {
 
-        printf("%s\n", lexema);
+        tab.linha = strdup(s1);
+
+        tab.lexema = strdup(s2);
+
+        tab.token = strdup(s3);
+
+        li = insere(li, tab);
+    }
+    return li;
+}
+void sintatico()
+{
+    Lista *li = NULL;
+    li = digital(li);
+    imp(li);
+}
+void program(Lista *li)
+{
+    int par = 0;
+    if (strcmp(li->tab.lexema, "{") == 0)
+    {
+        par++;
+        li = li->prox;
+    }
+    external_declaration(li);
+    if (par > 0)
+    {
+        if (strcmp(li->tab.lexema, "}") == 0)
+        {
+            
+            li = li->prox;
+        }
+        else {
+    
+        }
     }
 }
-
-void external_declaration()
+void external_declaration(Lista *li)
 {
     if ()
     {
-        function_definition();
-        /* code */
+        function_definition(li);
     }
     else if ()
     {
-        declaration();
-        /* code */
+        declaration(li);
     }
 }
-void function_definition()
+void function_definition(Lista *li)
 {
     if ()
     {
 
-        declaration_specifier();
-        declarator();
-        declaration();
+        declaration_specifier(li);
+        declarator(li);
+        declaration(li);
     }
 }
 
-void declaration_specifier()
+void declaration_specifier(Lista *li)
 {
     if ()
     {
-        storage_class_specifier();
-        /* code */
-    }
-    else if (/* condition */)
-    {
-        type_specifier();
-        /* code */
+        storage_class_specifier(li);
     }
     else if ()
     {
-        type_qualifier();
-        /* code */
+        type_specifier(li);
+    }
+    else if ()
+    {
+        type_qualifier(li);
     }
 }
-void storage_class_specifier()
+void storage_class_specifier(Lista *li)
 {
     if ("auto")
     {
@@ -84,7 +163,7 @@ void storage_class_specifier()
     }
 }
 
-void type_specifier()
+void type_specifier(Lista *li)
 {
     if ("void")
     {
@@ -115,55 +194,52 @@ void type_specifier()
     }
     else if ()
     {
-        struct_or_union_specifier();
+        struct_or_union_specifier(li);
     }
     else if ()
     {
-        enum_specifier();
+        enum_specifier(li);
     }
     else if ()
     {
-        typedef_name();
+        typedef_name(li);
     }
 }
 
-void struct_or_union_specifier()
+void struct_or_union_specifier(Lista *li)
 {
-    struct_or_union();
-    struct_or_union_specifier1();
+    struct_or_union(li);
+    struct_or_union_specifier1(li);
 }
-void struct_or_union_specifier1()
+void struct_or_union_specifier1(Lista *li)
 {
     if ()
     {
         //tokenidentifier();
         //chave aberta
-        struct_or_union_specifier2();
+        struct_or_union_specifier2(li);
         //+
         //chave fechada
     }
 }
-void struct_or_union2()
+void struct_or_union2(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //chave aberta
-        struct_declaration();
+        struct_declaration(li);
         //+
         //chave fechada
     }
 }
 
-void struct_or_union()
+void struct_or_union(Lista *li)
 {
     if ("struct")
     {
-
-        /* code */
     }
     else if ("union")
     {
-        /* code */
     }
     else
     {
@@ -171,110 +247,98 @@ void struct_or_union()
     }
 }
 
-void struct_declaration()
+void struct_declaration(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        specifier_qualifier();
+        specifier_qualifier(li);
         //asterisco
-        struct_declarator_list();
-        /* code */
+        struct_declarator_list(li);
     }
 }
 
-void specifier_qualifier()
+void specifier_qualifier(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        type_specifier();
-        /* code */
+        type_specifier(li);
     }
-    else if (/* condition */)
+    else if ()
     {
-        type_qualifier();
-        /* code */
+        type_qualifier(li);
     }
 }
 
-void struct_declarator_list()
+void struct_declarator_list(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        struct_declarator();
-        struct_declarator_list1();
-        /* code */
+        struct_declarator(li);
+        struct_declarator_list1(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void struct_declarator_list1()
+void struct_declarator_list1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //virgula
-        struct_declarator();
-        struct_declarator_list1();
-
-        /* code */
+        struct_declarator(li);
+        struct_declarator_list1(li);
     }
 }
-void struct_declarator()
+void struct_declarator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        declarator();
-        struct_declarator2();
-        /* code */
+        declarator(li);
+        struct_declarator2(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         // dois pontos
-        constant_experession();
-        /* code */
+        constant_experession(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void struct_declarator2()
+void struct_declarator2(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //dois pontos
-        constant_experession();
-
-        /* code */
+        constant_experession(li);
     }
 }
-void declarator()
+void declarator(Lista *li)
 {
     if ()
     {
         //abre parenteses
-        pointer();
+        pointer(li);
         // fecha parenteses
         //ponto de interrogacao
-        direct_declarator();
+        direct_declarator(li);
     }
     else
     {
     }
 }
-void pointer()
+void pointer(Lista *li)
 {
     if
     {
         //chave aberta
-        type_qualifier();
+        type_qualifier(li);
         //chave fechada
         //asterisco
         //chave aberta
-        pointer();
+        pointer(li);
         //chave fechada
         //ponto de interrogacao
     }
@@ -282,881 +346,779 @@ void pointer()
     {
     }
 }
-void type_qualifier()
+void type_qualifier(Lista *li)
 {
     if ("const")
     {
-
-        /* code */
     }
     else if ("volatile")
     {
-        /* code */
     }
 }
-void direct_declarator()
+void direct_declarator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //tokenIdentificador
-        direct_declarator1();
-        /* code */
+        direct_declarator1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //parentese aberto
-        declarator();
+        declarator(li);
         //parentese fechado
-        direct_declarator1();
-        /* code */
+        direct_declarator1(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void direct_declarator1()
+void direct_declarator1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //pare recto ab
         // chave abe
-        constant_experession();
+        constant_experession(li);
         //chave fe
         //ponto de interroga
         //pare recto fe
-        direct_declarator1();
-        /* code */
+        direct_declarator1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //parentese ab
-        direct_declarator2();
-        /* code */
+        direct_declarator2(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void direct_declarator2()
+void direct_declarator2(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
 
-        parameter_type_list();
-        direct_declarator1();
-        /* code */
+        parameter_type_list(li);
+        direct_declarator1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //chave ab
         //tokenIdentificador
         //cahve fe
         // asterisco
         //parente fe
-        direct_declarator1();
-
-        /* code */
+        direct_declarator1(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void constant_experession()
+void constant_experession(Lista *li)
 {
     if ()
     {
-        conditional_expression();
+        conditional_expression(li);
     }
     else
     {
     }
 }
-void conditional_expression()
+void conditional_expression(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        logical_or_experssion();
-        conditional_expression1();
-        /* code */
+        logical_or_experssion(li);
+        conditional_expression1(li);
     }
 }
 
-void conditional_expression1()
+void conditional_expression1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //ponto de interrogacao
-        expression();
+        expression(li);
         //dois pontos
-        conditional_expression();
-        /* code */
+        conditional_expression(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void logical_or_experssion()
+void logical_or_experssion(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        logical_or_experssion();
-        logical_or_experssion1();
-        /* code */
+        logical_or_experssion(li);
+        logical_or_experssion1(li);
     }
     else
     {
-        /* code */
     }
 }
 
-void logical_or_experssion1()
+void logical_or_experssion1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // Token OR
-        logical_or_experssion();
-        logical_or_experssion1();
-        /* code */
+        logical_or_experssion(li);
+        logical_or_experssion1(li);
     }
     else
     {
     }
 }
 
-void logical_and_experssion()
+void logical_and_experssion(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        inclusive_or_experssion();
-        inclusive_and_experssion1();
-        /* code */
+        inclusive_or_experssion(li);
+        inclusive_and_experssion1(li);
     }
     else
     {
     }
 }
 
-void logical_and_experssion1()
+void logical_and_experssion1(Lista *li)
 {
     if
     {
         //Token &&
-        inclusive_or_experssion();
-        logical_and_experssion1();
+        inclusive_or_experssion(li);
+        logical_and_experssion1(li);
     }
     else
     {
     }
 }
 
-void inclusive_or_experssion()
-{
-    if (/* condition */)
-    {
-        exclusive_or_expression();
-        inclusive_or_experssion1();
-        /* code */
-    }
-    else
-    {
-    }
-}
-
-void inclusive_or_experssion1()
-{
-    if (/* condition */)
-    {
-        //token |
-        exclusive_or_expression();
-        inclusive_or_experssion1();
-        /* code */
-    }
-    else
-    {
-        /* code */
-    }
-}
-
-void exclusive_or_expression()
-{
-    if (/* condition */)
-    {
-        and_expression();
-        exclusive_or_expression1();
-        /* code */
-    }
-    else
-    {
-        /* code */
-    }
-}
-
-void exclusive_or_expression1()
-{
-    if (/* condition */)
-    {
-        //Token circunlexo
-        and_expression();
-        exclusive_or_expression1();
-        /* code */
-    }
-}
-
-void and_expression()
-{
-    if (/* condition */)
-    {
-        equality_expression();
-        and_expression1();
-        /* code */
-    }
-    else if (/* condition */)
-    {
-        /* code */
-    }
-}
-
-void and_expression1()
-{
-    if (/* condition */)
-    {
-        //Token &
-        equality_expression();
-        and_expression1();
-        /* code */
-    }
-    else
-    {
-        /* code */
-    }
-}
-
-void equality_expression()
+void inclusive_or_experssion(Lista *li)
 {
     if ()
     {
-        relational_expression();
-        equality_expression1();
+        exclusive_or_expression(li);
+        inclusive_or_experssion1(li);
+    }
+    else
+    {
     }
 }
-void equality_expression1()
+
+void inclusive_or_experssion1(Lista *li)
 {
-    if (/* condition */)
+    if ()
+    {
+        //token |
+        exclusive_or_expression(li);
+        inclusive_or_experssion1(li);
+    }
+    else
+    {
+    }
+}
+
+void exclusive_or_expression(Lista *li)
+{
+    if ()
+    {
+        and_expression(li);
+        exclusive_or_expression1(li);
+    }
+    else
+    {
+    }
+}
+
+void exclusive_or_expression1(Lista *li)
+{
+    if ()
+    {
+        //Token circunlexo
+        and_expression(li);
+        exclusive_or_expression1(li);
+    }
+}
+
+void and_expression(Lista *li)
+{
+    if ()
+    {
+        equality_expression(li);
+        and_expression1(li);
+    }
+    else if ()
+    {
+    }
+}
+
+void and_expression1(Lista *li)
+{
+    if ()
+    {
+        //Token &
+        equality_expression(li);
+        and_expression1(li);
+    }
+    else
+    {
+    }
+}
+
+void equality_expression(Lista *li)
+{
+    if ()
+    {
+        relational_expression(li);
+        equality_expression1(li);
+    }
+}
+void equality_expression1(Lista *li)
+{
+    if ()
     {
 
-        relational_expression();
-        equality_expression1();
+        relational_expression(li);
+        equality_expression1(li);
     }
     else if ()
     {
         //Token !=
-        relational_expression();
-        equality_expression1();
+        relational_expression(li);
+        equality_expression1(li);
     }
     else
     {
     }
 }
-void relational_expression()
+void relational_expression(Lista *li)
 {
     if ()
     {
 
-        relational_expression1();
+        relational_expression1(li);
     }
     else
     {
     }
 }
 
-void relational_expression1()
+void relational_expression1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // Verifica < TOKEN
 
-        relational_expression1();
-
-        /* code */
+        relational_expression1(li);
     }
     else if ()
     {
         // Verifica > Token
 
-        relational_expression1();
-
-        /* code */
+        relational_expression1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         // Verifica <= Token
 
-        relational_expression1();
-        /* code */
+        relational_expression1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         // Verifica >= Token
 
-        relational_expression1();
-        /* code */
+        relational_expression1(li);
     }
     else
     {
     }
 }
 
-void cast_expression()
+void cast_expression(Lista *li)
 {
     if ()
     {
-        unary_expression()
+        unary_expression(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //Verifica (
-        type_name();
+        type_name(li);
 
         //Verifica )
-        /* code */
-        cast_expression();
+
+        cast_expression(li);
     }
 }
 
-void unary_expression()
+void unary_expression(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        postfix_expression();
-        /* code */
+        postfix_expression(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //Verifica ++
-        unary_expression();
-        /* code */
+        unary_expression(li);
     }
     else if ()
     {
         //Verifica --
-        postfix_expression();
-        /* code */
+        postfix_expression(li);
     }
-    else if (/* condition */)
+    else if ()
     {
-        unary_expression();
-        cast_expression();
-        /* code */
+        unary_expression(li);
+        cast_expression(li);
     }
     else if ()
     {
         //verifica sizeof
-        unary_expression1();
+        unary_expression1(li);
     }
 }
-void unary_expression1()
+void unary_expression1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        unary_expression();
-        /* code */
+        unary_expression(li);
     }
-    else if (/* condition */)
+    else if ()
 
     {
-        type_name();
-        /* code */
+        type_name(li);
     }
 }
 
-void primary_expression()
+void primary_expression(Lista *li)
 {
     if
     {
         //verifica identifier
     }
-    else if (/* condition */)
+    else if ()
     {
         //Verifica constante
         // ou int ou caracter ou float
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica string
-        /* code */
     }
     else if ()
     {
         //verifica (
 
-        expression();
+        expression(li);
         //verifica )
     }
 }
 
-void expression()
+void expression(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        assigment_expression();
-        expression1();
-        /* code */
+        assigment_expression(li);
+        expression1(li);
     }
 }
-void expression1()
+void expression1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica ,
-        assigment_expression();
-        expression1();
-        /* code */
+        assigment_expression(li);
+        expression1(li);
     }
 }
-void assigment_expression()
+void assigment_expression(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        conditional_expression();
-        /* code */
+        conditional_expression(li);
     }
-    else if (/* condition */)
+    else if ()
     {
-        unary_expression();
-        assigment_operator();
-        assigment_expression();
-        /* code */
+        unary_expression(li);
+        assigment_operator(li);
+        assigment_expression(li);
     }
 }
-void assigment_operator()
+void assigment_operator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
 
         // verifica = *= /= %= += -= <<= >>= &=
-        /* code */
     }
 }
-void unary_operator()
+void unary_operator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // verifica & * + - ~ !
-        /* code */
     }
 }
-void type_name()
+void type_name(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica {
-        specifier_qualifier();
+        specifier_qualifier(li);
         //verifica }
         //verifica {
-        abstract_declarator();
+        abstract_declarator(li);
         //verifica }
-        /* code */
     }
 }
-void parameter_type_list()
+void parameter_type_list(Lista *li)
 {
-    parameter_list();
-    parameter_type_list1
+    parameter_list(li);
+    parameter_type_list1(li);
 }
-void parameter_type_list1()
+void parameter_type_list1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica ,
         //verifica ...
-        /* code */
     }
 }
-void parameter_list()
+void parameter_list(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        parameter_declaration();
-        parameter_list1();
-        /* code */
+        parameter_declaration(li);
+        parameter_list1(li);
     }
 }
-void parameter_list1()
+void parameter_list1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica ,
-        parameter_declaration();
-        parameter_list1();
-        /* code */
+        parameter_declaration(li);
+        parameter_list1(li);
     }
 }
-void parameter_declaration()
+void parameter_declaration(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // verifica {
-        declaration_specifier();
+        declaration_specifier(li);
         //verifica }
-        parameter_declaration1();
-
-        /* code */
+        parameter_declaration1(li);
     }
 }
-void parameter_declaration1()
+void parameter_declaration1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        declarator();
-        /* code */
+        declarator(li);
     }
-    else if (/* condition */)
+    else if ()
     {
-        abstract_declarator();
-        /* code */
+        abstract_declarator(li);
     }
 }
-void abstract_declarator()
+void abstract_declarator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // verifica
-        pointer();
-        abstract_declarator1();
-        /* code */
+        pointer(li);
+        abstract_declarator1(li);
     }
 }
-void abstract_declarator1()
+void abstract_declarator1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        direct_abstract_declarator();
-        /* code */
+        direct_abstract_declarator(li);
     }
 }
-void direct_abstract_declarator()
+void direct_abstract_declarator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // verifica (
-        abstract_declarator();
+        abstract_declarator(li);
         // verifica )
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica { opt
-        direct_abstract_declarator();
+        direct_abstract_declarator(li);
         //verifica }
-        direct_abstract_declarator1();
-        /* code */
+        direct_abstract_declarator1(li);
     }
 }
-void direct_abstract_declarator1()
+void direct_abstract_declarator1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
 
         //verifica [
         //verifica {
-        conditional_expression();
+        conditional_expression(li);
         //verifica }
         //verifica ]
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         // verifica (
         //verifica { opt
-        parameter_type_list()
+        parameter_type_list(li);
         //verifica }
-        /* code */
     }
 }
-void typedef_name()
+void typedef_name(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica identificador
-        /* code */
     }
 }
-void declaration()
+void declaration(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica {
-        declaration_specifier();
+        declaration_specifier(li);
         //verifica}
         //verifica { opt
-        init_declarator();
+        init_declarator(li);
         //verifica }
         //verifica ;
-        /* code */
     }
 }
-void init_declarator()
+void init_declarator(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        declarator();
-        init_declarator1();
-        /* code */
+        declarator(li);
+        init_declarator1(li);
     }
 }
-void init_declarator1()
+void init_declarator1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica =
-        initializer();
-        /* code */
+        initializer(li);
     }
 }
-void initializer()
+void initializer(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        assigment_expression();
-
-        /* code */
+        assigment_expression(li);
     }
-    else if (/* condition */)
+    else if ()
     {
-        initializer_list();
-        initializer1();
-        /* code */
+        initializer_list(li);
+        initializer1(li);
     }
 }
-void initializer1()
+void initializer1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica ,
         //verifica }
-
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica }
-
-        /* code */
     }
 }
-void initializer_list()
+void initializer_list(Lista *li)
 {
-    initializer();
-    initializer_list1();
+    initializer(li);
+    initializer_list1(li);
 }
-void initializer_list1()
+void initializer_list1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica ,
-        initializer();
-        initializer_list1
-        /* code */
+        initializer(li);
+        initializer_list1(li);
     }
 }
-void compound_statement()
+void compound_statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
-        /* code */
     }
-    declaration();
+    declaration(li);
 }
-void statement()
+void statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica identifier
-        labeled_statement()
-        /* code */
+        labeled_statement(li)
     }
-    else if (/* condition */)
+    else if ()
     {
-        expression_statement();
-        /* code */
+        expression_statement(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica {
-        compound_statement();
-        /* code */
+        compound_statement(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         // verifica if ou switch
-        selection_statement()
-        /* code */
+        selection_statement(li)
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica while do for
-        iteration_statement();
-        /* code */
+        iteration_statement(li);
     }
-    else if (/* condition */)
+    else if ()
     {
 
         //verifica goto break continue
-        jump_statement();
-        /* code */
+        jump_statement(li);
     }
 }
-void labeled_statement()
+void labeled_statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
 
         // verifica :
-        statement();
-        /* code */
+        statement(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica case
-        constant_experession();
+        constant_experession(li);
         //verifica :
-        statement();
-
-        /* code */
+        statement(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica default
         //verfica :
-        statement();
-        /* code */
+        statement(li);
     }
 }
-void expression_statement()
+void expression_statement(Lista *li)
 {
     //verifica { opt
-    expression();
+    expression(li);
     //verifica } opt
     //verifica ;
 }
-void selection_statement()
+void selection_statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica if
         // verifica (
         //verifica { opt
-        expression();
+        expression(li);
         //verifica } opt
         //verifica )
-        statement();
-        selection_statement1();
-        /* code */
+        statement(li);
+        selection_statement1(li);
     }
-    else if (/* condition */)
+    else if ()
     {
         // verifica switch
         // verifica (
-        expression();
+        expression(li);
         //verifica )
-        statement();
-        /* code */
+        statement(li);
     }
     else
     {
-        /* code */
     }
 }
-void selection_statement1()
+void selection_statement1(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verifica else
-        statement();
-        /* code */
+        statement(li);
     }
 }
-void iteration_statement()
+void iteration_statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         //verfica while
         //verifica (
-        expression();
+        expression(li);
         //verifica)
-        statement();
-
-        /* code */
+        statement(li);
     }
     else if ()
     {
         //verifica "do"
-        statement();
+        statement(li);
         //verifica while
         //verifica (
-        expression()
+        expression(li)
         //verifica  )
         //verifica ;
-
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica for
         //verifica (
         // verifica { opt
-        expression();
+        expression(li);
         //verifica }
         //verifica;
         // verifica { opt
-        expression();
+        expression(li);
         //verifica }
         //verifica;// verifica { opt
-        expression();
+        expression(li);
         //verifica }
         //verifica )
-        statement();
-
-        /* code */
+        statement(li);
     }
 }
-void jump_statement()
+void jump_statement(Lista *li)
 {
-    if (/* condition */)
+    if ()
     {
         // verifica goto
         // identificador
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         //verifica continue
         //verifica ;
-
-        /* code */
     }
     else if ()
     {
         //verifica break
         //verifica ;
-        /* code */
     }
-    else if (/* condition */)
+    else if ()
     {
         // verifica return
         //{ opcional
-        expression();
+        expression(li);
         //} opcional
         //verifica ;
-        /* code */
     }
 }

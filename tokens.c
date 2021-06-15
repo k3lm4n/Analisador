@@ -18,6 +18,7 @@ const char *TOKGOTO[]={"goto","PALRESERVADA"};
 const char *TOKIF[]={"if","PALRESERVADA"};
 const char *TOKINT[]={"int","PALRESERVADA"};
 const char *TOKLONG[]={"long","PALRESERVADA"};
+const char *TOKMAIN[]={"main","PALRESERVADA"};
 const char *TOKREGISTER[]={"register","PALRESERVADA"};
 const char *TOKRETURN[]={"return","PALRESERVADA"};
 const char *TOKSHORT[]={"short","PALRESERVADA"};
