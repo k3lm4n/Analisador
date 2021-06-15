@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct err
+{
+    char *token;
+    char *lexema;
+    char *linha;
+} erro;
+typedef struct error
+{
+    erro tab;
+    struct error *prox;
+    /* data */
+} LError;
 typedef struct lex
 {
     char *token;
@@ -14,6 +26,8 @@ typedef struct lista
     struct lista *prox;
     /* data */
 } Lista;
+
+LError* Erros = NULL;
 
 Lista *init()
 {
@@ -55,6 +69,45 @@ void imp(Lista *li)
     }
 }
 
+LError *initError()
+{
+    LError *li = malloc(sizeof(LError));
+    li->prox = NULL;
+    return li;
+}
+LError *insereError(LError *li, erro tab)
+{
+    LError *novo = initError();
+    LError *aux = li;
+    novo->tab = tab;
+
+    if (aux == NULL)
+    {
+        li = novo;
+
+        /* code */
+    }
+    else
+    {
+        while (aux->prox != NULL)
+        {
+            aux = aux->prox;
+        }
+        aux->prox = novo;
+    }
+
+    return li;
+}
+void impError(LError *li)
+{
+    LError *aux = li;
+
+    while (aux != NULL)
+    {
+        printf("%s %s %s\n", aux->tab.linha, aux->tab.lexema, aux->tab.token);
+        aux = aux->prox;
+    }
+}
 Lista *digital(Lista *li)
 {
     FILE *pont_arq;
@@ -99,17 +152,17 @@ void program(Lista *li)
     {
         if (strcmp(li->tab.lexema, "}") == 0)
         {
-            
+
             li = li->prox;
         }
-        else {
-    
+        else
+        {
         }
     }
 }
 void external_declaration(Lista *li)
 {
-    if ()
+    if (strcmp() || strcmp() || strcmp() || strcmp() || strcmp() || strcmp())
     {
         function_definition(li);
     }
