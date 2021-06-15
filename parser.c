@@ -182,7 +182,7 @@ void struct_declaration()
     }
 }
 
-void specifier__qualifier()
+void specifier_qualifier()
 {
     if (/* condition */)
     {
@@ -703,34 +703,350 @@ void primary_expression()
     }
 }
 
-void expression() {}
-void expression() {}
-void assigment_expression() {}
-void assigment_operator() {}
-void unary_operator() {}
-void type_name() {}
-void parameter_type_list() {}
-void parameter_type_list1() {}
-void parameter_list() {}
-void parameter_list1() {}
-void parameter_declaration() {}
-void parameter_declaration1() {}
-void abstract_declarator() {}
-void abstract_declarator1() {}
-void direct_abstract_declarator() {}
-void direct_abstract_declarator1() {}
-void typedef_name() {}
-void declaration() {}
-void init_declarator() {}
-void init_declarator1() {}
-void initializer() {}
-void initializer_list() {}
-void initializer_list1() {}
-void compound_statement() {}
-void statement() {}
-void labeled_statement() {}
-void expression_statement() {
-    
+void expression()
+{
+    if (/* condition */)
+    {
+        assigment_expression();
+        expression1();
+        /* code */
+    }
+}
+void expression1()
+{
+    if (/* condition */)
+    {
+        //verifica ,
+        assigment_expression();
+        expression1();
+        /* code */
+    }
+}
+void assigment_expression()
+{
+    if (/* condition */)
+    {
+        conditional_expression();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        unary_expression();
+        assigment_operator();
+        assigment_expression();
+        /* code */
+    }
+}
+void assigment_operator()
+{
+    if (/* condition */)
+    {
+
+        // verifica = *= /= %= += -= <<= >>= &=
+        /* code */
+    }
+}
+void unary_operator()
+{
+    if (/* condition */)
+    {
+        // verifica & * + - ~ !
+        /* code */
+    }
+}
+void type_name()
+{
+    if (/* condition */)
+    {
+        //verifica {
+        specifier_qualifier();
+        //verifica }
+        //verifica {
+        abstract_declarator();
+        //verifica }
+        /* code */
+    }
+}
+void parameter_type_list()
+{
+    parameter_list();
+    parameter_type_list1
+}
+void parameter_type_list1()
+{
+    if (/* condition */)
+    {
+        //verifica ,
+        //verifica ...
+        /* code */
+    }
+}
+void parameter_list()
+{
+    if (/* condition */)
+    {
+        parameter_declaration();
+        parameter_list1();
+        /* code */
+    }
+}
+void parameter_list1()
+{
+    if (/* condition */)
+    {
+        //verifica ,
+        parameter_declaration();
+        parameter_list1();
+        /* code */
+    }
+}
+void parameter_declaration()
+{
+    if (/* condition */)
+    {
+        // verifica {
+        declaration_specifier();
+        //verifica }
+        parameter_declaration1();
+
+        /* code */
+    }
+}
+void parameter_declaration1()
+{
+    if (/* condition */)
+    {
+        declarator();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        abstract_declarator();
+        /* code */
+    }
+}
+void abstract_declarator()
+{
+    if (/* condition */)
+    {
+        // verifica
+        pointer();
+        abstract_declarator1();
+        /* code */
+    }
+}
+void abstract_declarator1()
+{
+    if (/* condition */)
+    {
+        direct_abstract_declarator();
+        /* code */
+    }
+}
+void direct_abstract_declarator()
+{
+    if (/* condition */)
+    {
+        // verifica (
+        abstract_declarator();
+        // verifica )
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica { opt
+        direct_abstract_declarator();
+        //verifica }
+        direct_abstract_declarator1();
+        /* code */
+    }
+}
+void direct_abstract_declarator1()
+{
+    if (/* condition */)
+    {
+
+        //verifica [
+        //verifica {
+        conditional_expression();
+        //verifica }
+        //verifica ]
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        // verifica (
+        //verifica { opt
+        parameter_type_list()
+        //verifica }
+        /* code */
+    }
+}
+void typedef_name()
+{
+    if (/* condition */)
+    {
+        //verifica identificador
+        /* code */
+    }
+}
+void declaration()
+{
+    if (/* condition */)
+    {
+        //verifica {
+        declaration_specifier();
+        //verifica}
+        //verifica { opt
+        init_declarator();
+        //verifica }
+        //verifica ;
+        /* code */
+    }
+}
+void init_declarator()
+{
+    if (/* condition */)
+    {
+        declarator();
+        init_declarator1();
+        /* code */
+    }
+}
+void init_declarator1()
+{
+    if (/* condition */)
+    {
+        //verifica =
+        initializer();
+        /* code */
+    }
+}
+void initializer()
+{
+    if (/* condition */)
+    {
+        assigment_expression();
+
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        initializer_list();
+        initializer1();
+        /* code */
+    }
+}
+void initializer1()
+{
+    if (/* condition */)
+    {
+        //verifica ,
+        //verifica }
+
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica }
+
+        /* code */
+    }
+}
+void initializer_list()
+{
+    initializer();
+    initializer_list1();
+}
+void initializer_list1()
+{
+    if (/* condition */)
+    {
+        //verifica ,
+        initializer();
+        initializer_list1
+        /* code */
+    }
+}
+void compound_statement()
+{
+    if (/* condition */)
+    {
+        /* code */
+    }
+    declaration();
+}
+void statement()
+{
+    if (/* condition */)
+    {
+        //verifica identifier
+        labeled_statement()
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        expression_statement();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica {
+        compound_statement();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        // verifica if ou switch
+        selection_statement()
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica while do for
+        iteration_statement();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+
+        //verifica goto break continue
+        jump_statement();
+        /* code */
+    }
+}
+void labeled_statement()
+{
+    if (/* condition */)
+    {
+
+        // verifica :
+        statement();
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica case
+        constant_experession();
+        //verifica :
+        statement();
+
+        /* code */
+    }
+    else if (/* condition */)
+    {
+        //verifica default
+        //verfica :
+        statement();
+        /* code */
+    }
+}
+void expression_statement()
+{
+    //verifica { opt
+    expression();
+    //verifica } opt
+    //verifica ;
 }
 void selection_statement()
 {
@@ -813,7 +1129,7 @@ void iteration_statement()
         /* code */
     }
 }
-void jump_statement1()
+void jump_statement()
 {
     if (/* condition */)
     {
