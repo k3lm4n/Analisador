@@ -8,6 +8,6 @@
 int main()
 {
   
-    //analex(0);
+    analex(0);
     sintatico();
 }

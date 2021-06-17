@@ -1,33 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include "parser.h"
 
-typedef struct err
+struct err
 {
-    char *token;
-    char *lexema;
+    char token[50];
+    char lexema[50];
     char *linha;
-} erro;
-typedef struct error
+};
+struct error
 {
     erro tab;
     struct error *prox;
     /* data */
-} LError;
-typedef struct lex
+};
+struct lex
 {
     char *token;
     char *lexema;
     char *linha;
-} Lex;
-typedef struct lista
+};
+struct lista
 {
     Lex tab;
     struct lista *prox;
     /* data */
-} Lista;
+};
 
-LError* Erros = NULL;
+LError *Erros = NULL;
 
 Lista *init()
 {
@@ -35,6 +37,7 @@ Lista *init()
     li->prox = NULL;
     return li;
 }
+
 Lista *insere(Lista *li, Lex tab)
 {
     Lista *novo = init();
@@ -58,13 +61,14 @@ Lista *insere(Lista *li, Lex tab)
 
     return li;
 }
+
 void imp(Lista *li)
 {
     Lista *aux = li;
 
     while (aux != NULL)
     {
-        printf("%s %s %s\n", aux->tab.linha, aux->tab.lexema, aux->tab.token);
+        printf("%s\n", aux->tab.token);
         aux = aux->prox;
     }
 }
@@ -75,6 +79,7 @@ LError *initError()
     li->prox = NULL;
     return li;
 }
+
 LError *insereError(LError *li, erro tab)
 {
     LError *novo = initError();
@@ -98,6 +103,7 @@ LError *insereError(LError *li, erro tab)
 
     return li;
 }
+
 void impError(LError *li)
 {
     LError *aux = li;
@@ -108,6 +114,7 @@ void impError(LError *li)
         aux = aux->prox;
     }
 }
+
 Lista *digital(Lista *li)
 {
     FILE *pont_arq;
@@ -133,1045 +140,1026 @@ Lista *digital(Lista *li)
     }
     return li;
 }
+
 void sintatico()
 {
     Lista *li = NULL;
     li = digital(li);
-    imp(li);
+    //imp(li);
+    program(li);
 }
+
 void program(Lista *li)
 {
-    int par = 0;
-    if (strcmp(li->tab.lexema, "{") == 0)
+    li = functions(li);
+
+    if (li == NULL)
+        printf("Verificacao completa\n");
+    else
+        printf("Verificacao incompleta\n");
+}
+
+Lista *functions(Lista *li)
+{
+    printf(" functions %s\n", li->tab.lexema);
+    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0 || strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 || strcmp(li->tab.lexema, "void") == 0 || strcmp(li->tab.lexema, "double") == 0)
     {
-        par++;
+
+        li = external(li);
+        li = functions(li);
+    }
+    return li;
+}
+
+Lista *external(Lista *li)
+{
+    printf("external %s\n", li->tab.lexema);
+    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
+    {
+        li = li->prox;
+        li = func(li);
+    }
+    else
+    {
+        li = type(li);
+        li = restoextern(li);
+    }
+    return li;
+}
+Lista *type(Lista *li)
+{
+    printf("type %s\n", li->tab.lexema);
+    if (strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
+    {
+        li = li->prox;
+        return li;
+    }
+    
+}
+Lista *func(Lista *li)
+{
+
+    printf("func %s\n", li->tab.lexema);
+    li = f_args(li);
+    if (strcmp(li->tab.lexema, "{") != 0)
+    {
+        printf("Esperava \"{\" na linha %s\n", li->tab.linha);
         li = li->prox;
     }
-    external_declaration(li);
-    if (par > 0)
+    else
+        li = li->prox;
+
+    li = dcls(li);
+    li = stmts(li);
+    if (strcmp(li->tab.lexema, "}") != 0)
     {
-        if (strcmp(li->tab.lexema, "}") == 0)
+        printf("Esperava \"}\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+    else
+        li = li->prox;
+    return li;
+}
+
+Lista *restoextern(Lista *li)
+{
+    printf("restoextern %s\n", li->tab.lexema);
+    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
+    {
+        li = li->prox;
+        li = restoextern2(li);
+    }
+    else
+    {
+        if (strcmp(li->tab.lexema, "*") != 0)
         {
+            printf("Esperava \"*\" na linha %s\n", li->tab.linha);
 
             li = li->prox;
         }
         else
+            li = li->prox;
+        if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
         {
+            printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = restovars(li);
+    }
+    return li;
+}
+
+Lista *restoextern2(Lista *li)
+{
+    printf("restoextern2 %s\n", li->tab.lexema);
+    if (strcmp(li->tab.lexema, "{") == 0)
+        li = func(li);
+    else
+    {
+        li = restodclr(li);
+        li = restovars(li);
+    }
+    return li;
+}
+
+Lista *restovars(Lista *li)
+{
+    printf("restovars %s\n", li->tab.lexema);
+    if (strcmp(li->tab.lexema, ",") == 0)
+    {
+        li = li->prox;
+        li = dclr(li);
+        li = restovars(li);
+    }
+    else
+    {
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Aqui\n");
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    return li;
+}
+
+Lista *funct(Lista *li)
+{
+
+    li = f_args(li);
+    if (strcmp(li->tab.lexema, "}") != 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        printf("Esperava \"{\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+
+    li = dcls(li);
+    li = stmts(li);
+    if (strcmp(li->tab.lexema, "}") != 0)
+    {
+        printf("Esperava \"}\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+    else
+        li = li->prox;
+    return li;
+}
+
+Lista *dcls(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
+    {
+        li = var(li);
+        li = dcls(li);
+    }
+    return li;
+}
+
+Lista *var(Lista *li)
+{
+    li = type(li);
+    li = dclr(li);
+    li = restovars(li);
+    return li;
+}
+
+Lista *stmts(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "if") == 0 || strcmp(li->tab.lexema, "while") == 0 || strcmp(li->tab.lexema, "for") == 0 || strcmp(li->tab.lexema, "return") == 0 ||
+        strcmp(li->tab.lexema, "break") == 0 || strcmp(li->tab.lexema, "continue") == 0 || strcmp(li->tab.lexema, ";") == 0 || strcmp(li->tab.lexema, "!=") == 0 ||
+        strcmp(li->tab.lexema, "&") == 0 || strcmp(li->tab.lexema, "*") == 0 || strcmp(li->tab.lexema, "-") == 0 || strcmp(li->tab.lexema, "+") == 0 ||
+        strcmp(li->tab.lexema, "~") == 0 || strcmp(li->tab.lexema, "++") == 0 || strcmp(li->tab.lexema, "--") == 0 || strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0 ||
+        strcmp(li->tab.lexema, "(") == 0 || strcmp(li->tab.token, "TOK_NFLOAT") == 0 || strcmp(li->tab.token, "TOK_NINT") == 0 || strcmp(li->tab.token, "TOKSTRING") == 0 ||
+        strcmp(li->tab.lexema, "{"))
+    {
+        li = stmt(li);
+        li = stmts(li);
+    }
+    return li;
+}
+
+Lista *expro(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "!") == 0 || strcmp(li->tab.lexema, "&") == 0 || strcmp(li->tab.lexema, "*") == 0 || strcmp(li->tab.lexema, "-") == 0 ||
+        strcmp(li->tab.lexema, "+") == 0 || strcmp(li->tab.lexema, "~") == 0 || strcmp(li->tab.lexema, "++") == 0 || strcmp(li->tab.lexema, "--") == 0 ||
+        strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0 || strcmp(li->tab.lexema, "(") == 0 || strcmp(li->tab.token, "TOK_NINT") == 0 || strcmp(li->tab.token, "TOK_NFLOAT") == 0 ||
+        strcmp(li->tab.token, "TOKSTRING") == 0 || strcmp(li->tab.lexema, "&&") == 0 || strcmp(li->tab.lexema, "||") == 0)
+    {
+        li = expr(li);
+    }
+    return li;
+}
+
+Lista *stmt(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "if") == 0)
+    {
+        li = li->prox;
+        if (strcmp(li->tab.lexema, "(") != 0)
+        {
+            printf("Esperava \"(\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = expro(li);
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = stmt(li);
+        li = restoif(li);
+    }
+    else if (strcmp(li->tab.lexema, "while") == 0)
+    {
+        li = li->prox;
+        if (strcmp(li->tab.lexema, "(") != 0)
+        {
+            printf("Esperava \"(\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = expro(li);
+        if (strcmp(li->tab.lexema, ")") == 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = stmt(li);
+    }
+    else if (strcmp(li->tab.lexema, "for") == 0)
+    {
+        li = li->prox;
+        if (strcmp(li->tab.lexema, "(") != 0)
+        {
+            printf("Esperava \"(\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = expro(li);
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = expro(li);
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        li = expro(li);
+
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+
+        li = stmt(li);
+    }
+    else if (strcmp(li->tab.lexema, "return") == 0)
+    {
+        li = li->prox;
+        li = restoreturn(li);
+    }
+    else if (strcmp(li->tab.lexema, "break") == 0)
+    {
+        li = li->prox;
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    else if (strcmp(li->tab.lexema, "continue") == 0)
+    {
+        li = li->prox;
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    else if (strcmp(li->tab.lexema, "{") == 0)
+    {
+        li = block(li);
+    }
+    else if (strcmp(li->tab.lexema, ";") == 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        li = expr(li);
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    return li;
+}
+
+Lista *restoreturn(Lista *li)
+{
+    if (strcmp(li->tab.lexema, ";") == 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        li = expr(li);
+        if (strcmp(li->tab.lexema, ";") != 0)
+        {
+            printf("Esperava \";\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    return li;
+}
+
+Lista *block(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "{") != 0)
+    {
+        printf("Esperava \")\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+    else
+        li = li->prox;
+    li = stmts(li);
+    if (strcmp(li->tab.lexema, "}") != 0)
+    {
+        printf("Esperava \")\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+    else
+        li = li->prox;
+    return li;
+}
+Lista *restoif(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "else") == 0)
+    {
+        li = li->prox;
+        li = stmt(li);
+    }
+    return li;
+}
+
+Lista *f_args(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "(") != 0)
+    {
+        printf("Esperava \"(\" na linha %s\n", li->tab.linha);
+        li = li->prox;
+    }
+    else
+        li = li->prox;
+    li = restof_args(li);
+    return li;
+}
+
+Lista *restof_args(Lista *li)
+{
+    if (strcmp(li->tab.lexema, ")") == 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        li = li->prox;
+
+        li = args(li);
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        li = li->prox;
+    }
+    return li;
+}
+
+Lista *args(Lista *li)
+{
+    li = type(li);
+    li = dclr(li);
+    li = restot_args(li);
+    return li;
+}
+Lista *dclr(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "TOKIDENTIFICADOR") == 0)
+    {
+        li = li->prox;
+        li = restodclr(li);
+    }
+    return li;
+}
+
+Lista *restot_args(Lista *li)
+{
+    if (strcmp(li->tab.lexema, ",") == 0)
+    {
+        li = li->prox;
+        li = args(li);
+    }
+    return li;
+}
+
+Lista *restodclr(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "[") == 0)
+    {
+        li = li->prox;
+        li = restodclr2(li);
+    }
+    return li;
+}
+
+Lista *restodclr2(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "]") == 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        if (strcmp(li->tab.token, "TOK_NINT") == 0)
+        {
+            li = li->prox;
+        }
+        else
+        {
+            printf("Esperava \"]\" na linha %s\n", li->tab.linha);
+            li = li->prox;
         }
     }
-}
-void external_declaration(Lista *li)
-{
-    if (strcmp() || strcmp() || strcmp() || strcmp() || strcmp() || strcmp())
-    {
-        function_definition(li);
-    }
-    else if ()
-    {
-        declaration(li);
-    }
-}
-void function_definition(Lista *li)
-{
-    if ()
-    {
-
-        declaration_specifier(li);
-        declarator(li);
-        declaration(li);
-    }
+    return li;
 }
 
-void declaration_specifier(Lista *li)
+Lista *expr(Lista *li)
 {
-    if ()
-    {
-        storage_class_specifier(li);
-    }
-    else if ()
-    {
-        type_specifier(li);
-    }
-    else if ()
-    {
-        type_qualifier(li);
-    }
-}
-void storage_class_specifier(Lista *li)
-{
-    if ("auto")
-    {
-    }
-    else if ("resgister")
-    {
-    }
-    else if ("static")
-    {
-    }
-    else if ("extern")
-    {
-    }
-    else if ("typedef")
-    {
-    }
+
+    li = restoexpr(li, or (li));
+    return li;
 }
 
-void type_specifier(Lista *li)
+Lista *exprs(Lista *li)
 {
-    if ("void")
-    {
-    }
-    else if ("char")
-    {
-    }
-    else if ("short")
-    {
-    }
-    else if ("int")
-    {
-    }
-    else if ("long")
-    {
-    }
-    else if ("float")
-    {
-    }
-    else if ("double")
-    {
-    }
-    else if ("signed")
-    {
-    }
-    else if ("unsigned")
-    {
-    }
-    else if ()
-    {
-        struct_or_union_specifier(li);
-    }
-    else if ()
-    {
-        enum_specifier(li);
-    }
-    else if ()
-    {
-        typedef_name(li);
-    }
+    li = expr(li);
+    li = restoexprs(li);
+    return li;
 }
 
-void struct_or_union_specifier(Lista *li)
+Lista *restoexprs(Lista *li)
 {
-    struct_or_union(li);
-    struct_or_union_specifier1(li);
-}
-void struct_or_union_specifier1(Lista *li)
-{
-    if ()
+    if (strcmp(li->tab.lexema, ",") == 0)
     {
-        //tokenidentifier();
-        //chave aberta
-        struct_or_union_specifier2(li);
-        //+
-        //chave fechada
+        li = li->prox;
+        li = exprs(li);
     }
-}
-void struct_or_union2(Lista *li)
-{
-    if ()
-    {
-        //chave aberta
-        struct_declaration(li);
-        //+
-        //chave fechada
-    }
+    return li;
 }
 
-void struct_or_union(Lista *li)
+Lista *restoexpr(Lista *li, bool lval)
 {
-    if ("struct")
+    if (strcmp(li->tab.lexema, "==") == 0)
     {
+        if (lval)
+        {
+            li = li->prox;
+            li = expr(li);
+        }
     }
-    else if ("union")
+    return li;
+}
+
+Lista *restofator2(Lista *li)
+{
+    if (strcmp(li->tab.lexema, ")") == 0)
     {
+        li = li->prox;
     }
     else
     {
-        printf("esperava struct ou union na linha %d", linha);
+        li = exprs(li);
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
     }
+    return li;
+}
+Lista *restolval(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "[") == 0)
+    {
+        li = li->prox;
+        expr(li);
+        if (strcmp(li->tab.lexema, "]") != 0)
+        {
+            printf("Esperava \"]\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+    }
+    return li;
+}
+bool or (Lista * li)
+{
+    bool e1 = and(li);
+    bool e2 = restoor(li);
+    return e1 && e2;
 }
 
-void struct_declaration(Lista *li)
+bool restoor(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "||") == 0)
     {
-        specifier_qualifier(li);
-        //asterisco
-        struct_declarator_list(li);
-    }
-}
-
-void specifier_qualifier(Lista *li)
-{
-    if ()
-    {
-        type_specifier(li);
-    }
-    else if ()
-    {
-        type_qualifier(li);
-    }
-}
-
-void struct_declarator_list(Lista *li)
-{
-    if ()
-    {
-        struct_declarator(li);
-        struct_declarator_list1(li);
+        li = li->prox;
+        or (li);
+        return false;
     }
     else
     {
+        return true;
     }
 }
 
-void struct_declarator_list1(Lista *li)
+bool and (Lista * li)
 {
-    if ()
-    {
-        //virgula
-        struct_declarator(li);
-        struct_declarator_list1(li);
-    }
+    bool e1 = not(li);
+    bool e2 = restoand(li);
+    return e1 && e2;
 }
-void struct_declarator(Lista *li)
+
+bool restoand(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "&") == 0)
     {
-        declarator(li);
-        struct_declarator2(li);
-    }
-    else if ()
-    {
-        // dois pontos
-        constant_experession(li);
+        li = li->prox;
+        and(li);
+        return false;
     }
     else
     {
+        return true;
     }
 }
 
-void struct_declarator2(Lista *li)
+bool not(Lista * li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "!") == 0)
     {
-        //dois pontos
-        constant_experession(li);
-    }
-}
-void declarator(Lista *li)
-{
-    if ()
-    {
-        //abre parenteses
-        pointer(li);
-        // fecha parenteses
-        //ponto de interrogacao
-        direct_declarator(li);
+        li = li->prox;
+        not(li);
+        return false;
     }
     else
     {
+        return cfator(li);
     }
 }
-void pointer(Lista *li)
+
+bool cfator(Lista *li)
 {
-    if
+    bool e1 = orbin(li);
+    bool e2 = restocfator(li);
+    return e1 && e2;
+}
+
+bool restocfator(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "="))
     {
-        //chave aberta
-        type_qualifier(li);
-        //chave fechada
-        //asterisco
-        //chave aberta
-        pointer(li);
-        //chave fechada
-        //ponto de interrogacao
+        li = li->prox;
+        orbin(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "!") == 0)
+    {
+        li = li->prox;
+        orbin(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "-=") == 0)
+    {
+        li = li->prox;
+        orbin(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, ">=") == 0)
+    {
+        li = li->prox;
+        orbin(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "<") == 0)
+    {
+        li = li->prox;
+        orbin(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, ">") == 0)
+    {
+        li = li->prox;
+        orbin(li);
+        return false;
     }
     else
     {
+
+        return true;
     }
 }
-void type_qualifier(Lista *li)
+
+bool orbin(Lista *li)
 {
-    if ("const")
-    {
-    }
-    else if ("volatile")
-    {
-    }
+    bool e1 = xorbin(li);
+    bool e2 = restoorbin(li);
+    return e1 && e2;
 }
-void direct_declarator(Lista *li)
+bool restoorbin(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "||") == 0)
     {
-        //tokenIdentificador
-        direct_declarator1(li);
-    }
-    else if ()
-    {
-        //parentese aberto
-        declarator(li);
-        //parentese fechado
-        direct_declarator1(li);
+        li = li->prox;
+        xorbin(li);
+        restoorbin(li);
+        return false;
     }
     else
     {
+
+        return true;
     }
 }
 
-void direct_declarator1(Lista *li)
+bool xorbin(Lista *li)
 {
-    if ()
+    bool r1 = andbin(li);
+    bool r2 = restoxorbin(li);
+    return r1 && r2;
+}
+
+bool restoxorbin(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "^") == 0)
     {
-        //pare recto ab
-        // chave abe
-        constant_experession(li);
-        //chave fe
-        //ponto de interroga
-        //pare recto fe
-        direct_declarator1(li);
-    }
-    else if ()
-    {
-        //parentese ab
-        direct_declarator2(li);
+        li = li->prox;
+        andbin(li);
+        restoxorbin(li);
+        return false;
     }
     else
     {
+        return true;
     }
 }
 
-void direct_declarator2(Lista *li)
+bool andbin(Lista *li)
 {
-    if ()
-    {
+    bool r1 = rola(li);
+    bool r2 = restoandbin(li);
+    return r1 && r2;
+}
 
-        parameter_type_list(li);
-        direct_declarator1(li);
-    }
-    else if ()
+bool restoandbin(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "&&") == 0)
     {
-        //chave ab
-        //tokenIdentificador
-        //cahve fe
-        // asterisco
-        //parente fe
-        direct_declarator1(li);
+        li = li->prox;
+        rola(li);
+        restoandbin(li);
+        return false;
     }
     else
     {
+        return true;
     }
 }
 
-void constant_experession(Lista *li)
+bool rola(Lista *li)
 {
-    if ()
+    bool r1 = soma(li);
+    bool r2 = restorola(li);
+    return r1 && r2;
+}
+
+bool restorola(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "<<") == 0)
     {
-        conditional_expression(li);
+
+        li = li->prox;
+        soma(li);
+        restorola(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "&&") == 0)
+    {
+        li = li->prox;
+        soma(li);
+        restorola(li);
+        return false;
     }
     else
     {
-    }
-}
-void conditional_expression(Lista *li)
-{
-    if ()
-    {
-        logical_or_experssion(li);
-        conditional_expression1(li);
+        return true;
     }
 }
 
-void conditional_expression1(Lista *li)
+bool soma(Lista *li)
 {
-    if ()
+    bool r1 = mult(li);
+    bool r2 = restosoma(li);
+    return r1 && r2;
+}
+
+bool restosoma(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "+") == 0)
     {
-        //ponto de interrogacao
-        expression(li);
-        //dois pontos
-        conditional_expression(li);
+        li = li->prox;
+        mult(li);
+        restosoma(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "-") == 0)
+    {
+        li = li->prox;
+        mult(li);
+        restosoma(li);
+        return false;
     }
     else
     {
+        return true;
     }
 }
 
-void logical_or_experssion(Lista *li)
+bool mult(Lista *li)
 {
-    if ()
+    bool r1 = ender(li);
+    bool r2 = restomult(li);
+    return r1 && r2;
+}
+
+bool restomult(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "*") == 0)
     {
-        logical_or_experssion(li);
-        logical_or_experssion1(li);
+        li = li->prox;
+        bool r1 = ender(li);
+        bool r2 = restomult(li);
+        return r1 && r2;
+    }
+    else if (strcmp(li->tab.lexema, "/") == 0)
+    {
+        li = li->prox;
+        ender(li);
+        restomult(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "%") == 0)
+    {
+        li = li->prox;
+        ender(li);
+        restomult(li);
+        return false;
     }
     else
     {
+
+        return true;
     }
 }
 
-void logical_or_experssion1(Lista *li)
+bool ender(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "&&") == 0)
     {
-        // Token OR
-        logical_or_experssion(li);
-        logical_or_experssion1(li);
+        li = li->prox;
+        lval(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "*") == 0)
+    {
+        bool error;
+        li = li->prox;
+        error = ender(li);
+
+        return error;
     }
     else
     {
+        return uno(li);
     }
 }
 
-void logical_and_experssion(Lista *li)
+bool uno(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "-") == 0)
     {
-        inclusive_or_experssion(li);
-        inclusive_and_experssion1(li);
+        li = li->prox;
+        uno(li);
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "+") == 0)
+    {
+        li = li->prox;
+        uno(li);
+        return false;
     }
     else
     {
+        return notbin(li);
     }
 }
 
-void logical_and_experssion1(Lista *li)
+bool notbin(Lista *li)
 {
-    if
+    if (strcmp(li->tab.lexema, "~") == 0)
     {
-        //Token &&
-        inclusive_or_experssion(li);
-        logical_and_experssion1(li);
+        li = li->prox;
+        notbin(li);
+        return false;
     }
     else
     {
+        return incpre(li);
     }
 }
 
-void inclusive_or_experssion(Lista *li)
+Lista *lval(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
     {
-        exclusive_or_expression(li);
-        inclusive_or_experssion1(li);
+        li = li->prox;
+        li = restolval(li);
     }
     else
     {
+        if (strcmp(li->tab.lexema, "*") != 0)
+        {
+            printf("Esperava \"*\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
+        {
+            printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
     }
+    return li;
 }
 
-void inclusive_or_experssion1(Lista *li)
+bool incpre(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "++") == 0)
     {
-        //token |
-        exclusive_or_expression(li);
-        inclusive_or_experssion1(li);
+        li = li->prox;
+        lval(li);
+        return true;
+    }
+    else if (strcmp(li->tab.lexema, "--") == 0)
+    {
+        li = li->prox;
+        lval(li);
+        return true;
     }
     else
     {
+        return incpos(li);
     }
 }
 
-void exclusive_or_expression(Lista *li)
+bool incpos(Lista *li)
 {
-    if ()
+    bool retorno = fator(li);
+    restoincpos(li);
+    return retorno;
+}
+
+Lista *restoincpos(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "--") == 0)
     {
-        and_expression(li);
-        exclusive_or_expression1(li);
+        li = li->prox;
+    }
+    else if (strcmp(li->tab.lexema, "++") == 0)
+    {
+        li = li->prox;
+    }
+    return li;
+}
+
+bool fator(Lista *li)
+{
+    if (strcmp(li->tab.token, "TOKSTRING") == 0)
+    {
+        li = li->prox;
+        return false;
+    }
+    else if (strcmp(li->tab.lexema, "(") == 0)
+    {
+        li = li->prox;
+        li = expr(li);
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \"]\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        return false;
+    }
+    else if (strcmp(li->tab.token, "TOK_NINT") == 0)
+    {
+        li = li->prox;
+        return false;
+    }
+    else if (strcmp(li->tab.token, "TOK_NFLOAT") == 0)
+    {
+        li = li->prox;
+        return false;
     }
     else
     {
+        if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
+        {
+            printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        return restofator1(li);
     }
 }
 
-void exclusive_or_expression1(Lista *li)
+bool restofator1(Lista *li)
 {
-    if ()
+    if (strcmp(li->tab.lexema, "[") == 0)
     {
-        //Token circunlexo
-        and_expression(li);
-        exclusive_or_expression1(li);
+        li = li->prox;
+        li = expr(li);
+        if (strcmp(li->tab.lexema, "]") != 0)
+        {
+            printf("Esperava \"]\" na linha %s\n", li->tab.linha);
+            li = li->prox;
+        }
+        else
+            li = li->prox;
+        return true;
     }
-}
-
-void and_expression(Lista *li)
-{
-    if ()
+    else if (strcmp(li->tab.lexema, "(") == 0)
     {
-        equality_expression(li);
-        and_expression1(li);
-    }
-    else if ()
-    {
-    }
-}
-
-void and_expression1(Lista *li)
-{
-    if ()
-    {
-        //Token &
-        equality_expression(li);
-        and_expression1(li);
+        li = li->prox;
+        li = restofator2(li);
+        return false;
     }
     else
     {
-    }
-}
-
-void equality_expression(Lista *li)
-{
-    if ()
-    {
-        relational_expression(li);
-        equality_expression1(li);
-    }
-}
-void equality_expression1(Lista *li)
-{
-    if ()
-    {
-
-        relational_expression(li);
-        equality_expression1(li);
-    }
-    else if ()
-    {
-        //Token !=
-        relational_expression(li);
-        equality_expression1(li);
-    }
-    else
-    {
-    }
-}
-void relational_expression(Lista *li)
-{
-    if ()
-    {
-
-        relational_expression1(li);
-    }
-    else
-    {
-    }
-}
-
-void relational_expression1(Lista *li)
-{
-    if ()
-    {
-        // Verifica < TOKEN
-
-        relational_expression1(li);
-    }
-    else if ()
-    {
-        // Verifica > Token
-
-        relational_expression1(li);
-    }
-    else if ()
-    {
-        // Verifica <= Token
-
-        relational_expression1(li);
-    }
-    else if ()
-    {
-        // Verifica >= Token
-
-        relational_expression1(li);
-    }
-    else
-    {
-    }
-}
-
-void cast_expression(Lista *li)
-{
-    if ()
-    {
-        unary_expression(li);
-    }
-    else if ()
-    {
-        //Verifica (
-        type_name(li);
-
-        //Verifica )
-
-        cast_expression(li);
-    }
-}
-
-void unary_expression(Lista *li)
-{
-    if ()
-    {
-        postfix_expression(li);
-    }
-    else if ()
-    {
-        //Verifica ++
-        unary_expression(li);
-    }
-    else if ()
-    {
-        //Verifica --
-        postfix_expression(li);
-    }
-    else if ()
-    {
-        unary_expression(li);
-        cast_expression(li);
-    }
-    else if ()
-    {
-        //verifica sizeof
-        unary_expression1(li);
-    }
-}
-void unary_expression1(Lista *li)
-{
-    if ()
-    {
-        unary_expression(li);
-    }
-    else if ()
-
-    {
-        type_name(li);
-    }
-}
-
-void primary_expression(Lista *li)
-{
-    if
-    {
-        //verifica identifier
-    }
-    else if ()
-    {
-        //Verifica constante
-        // ou int ou caracter ou float
-    }
-    else if ()
-    {
-        //verifica string
-    }
-    else if ()
-    {
-        //verifica (
-
-        expression(li);
-        //verifica )
-    }
-}
-
-void expression(Lista *li)
-{
-    if ()
-    {
-        assigment_expression(li);
-        expression1(li);
-    }
-}
-void expression1(Lista *li)
-{
-    if ()
-    {
-        //verifica ,
-        assigment_expression(li);
-        expression1(li);
-    }
-}
-void assigment_expression(Lista *li)
-{
-    if ()
-    {
-        conditional_expression(li);
-    }
-    else if ()
-    {
-        unary_expression(li);
-        assigment_operator(li);
-        assigment_expression(li);
-    }
-}
-void assigment_operator(Lista *li)
-{
-    if ()
-    {
-
-        // verifica = *= /= %= += -= <<= >>= &=
-    }
-}
-void unary_operator(Lista *li)
-{
-    if ()
-    {
-        // verifica & * + - ~ !
-    }
-}
-void type_name(Lista *li)
-{
-    if ()
-    {
-        //verifica {
-        specifier_qualifier(li);
-        //verifica }
-        //verifica {
-        abstract_declarator(li);
-        //verifica }
-    }
-}
-void parameter_type_list(Lista *li)
-{
-    parameter_list(li);
-    parameter_type_list1(li);
-}
-void parameter_type_list1(Lista *li)
-{
-    if ()
-    {
-        //verifica ,
-        //verifica ...
-    }
-}
-void parameter_list(Lista *li)
-{
-    if ()
-    {
-        parameter_declaration(li);
-        parameter_list1(li);
-    }
-}
-void parameter_list1(Lista *li)
-{
-    if ()
-    {
-        //verifica ,
-        parameter_declaration(li);
-        parameter_list1(li);
-    }
-}
-void parameter_declaration(Lista *li)
-{
-    if ()
-    {
-        // verifica {
-        declaration_specifier(li);
-        //verifica }
-        parameter_declaration1(li);
-    }
-}
-void parameter_declaration1(Lista *li)
-{
-    if ()
-    {
-        declarator(li);
-    }
-    else if ()
-    {
-        abstract_declarator(li);
-    }
-}
-void abstract_declarator(Lista *li)
-{
-    if ()
-    {
-        // verifica
-        pointer(li);
-        abstract_declarator1(li);
-    }
-}
-void abstract_declarator1(Lista *li)
-{
-    if ()
-    {
-        direct_abstract_declarator(li);
-    }
-}
-void direct_abstract_declarator(Lista *li)
-{
-    if ()
-    {
-        // verifica (
-        abstract_declarator(li);
-        // verifica )
-    }
-    else if ()
-    {
-        //verifica { opt
-        direct_abstract_declarator(li);
-        //verifica }
-        direct_abstract_declarator1(li);
-    }
-}
-void direct_abstract_declarator1(Lista *li)
-{
-    if ()
-    {
-
-        //verifica [
-        //verifica {
-        conditional_expression(li);
-        //verifica }
-        //verifica ]
-    }
-    else if ()
-    {
-        // verifica (
-        //verifica { opt
-        parameter_type_list(li);
-        //verifica }
-    }
-}
-void typedef_name(Lista *li)
-{
-    if ()
-    {
-        //verifica identificador
-    }
-}
-void declaration(Lista *li)
-{
-    if ()
-    {
-        //verifica {
-        declaration_specifier(li);
-        //verifica}
-        //verifica { opt
-        init_declarator(li);
-        //verifica }
-        //verifica ;
-    }
-}
-void init_declarator(Lista *li)
-{
-    if ()
-    {
-        declarator(li);
-        init_declarator1(li);
-    }
-}
-void init_declarator1(Lista *li)
-{
-    if ()
-    {
-        //verifica =
-        initializer(li);
-    }
-}
-void initializer(Lista *li)
-{
-    if ()
-    {
-        assigment_expression(li);
-    }
-    else if ()
-    {
-        initializer_list(li);
-        initializer1(li);
-    }
-}
-void initializer1(Lista *li)
-{
-    if ()
-    {
-        //verifica ,
-        //verifica }
-    }
-    else if ()
-    {
-        //verifica }
-    }
-}
-void initializer_list(Lista *li)
-{
-    initializer(li);
-    initializer_list1(li);
-}
-void initializer_list1(Lista *li)
-{
-    if ()
-    {
-        //verifica ,
-        initializer(li);
-        initializer_list1(li);
-    }
-}
-void compound_statement(Lista *li)
-{
-    if ()
-    {
-    }
-    declaration(li);
-}
-void statement(Lista *li)
-{
-    if ()
-    {
-        //verifica identifier
-        labeled_statement(li)
-    }
-    else if ()
-    {
-        expression_statement(li);
-    }
-    else if ()
-    {
-        //verifica {
-        compound_statement(li);
-    }
-    else if ()
-    {
-        // verifica if ou switch
-        selection_statement(li)
-    }
-    else if ()
-    {
-        //verifica while do for
-        iteration_statement(li);
-    }
-    else if ()
-    {
-
-        //verifica goto break continue
-        jump_statement(li);
-    }
-}
-void labeled_statement(Lista *li)
-{
-    if ()
-    {
-
-        // verifica :
-        statement(li);
-    }
-    else if ()
-    {
-        //verifica case
-        constant_experession(li);
-        //verifica :
-        statement(li);
-    }
-    else if ()
-    {
-        //verifica default
-        //verfica :
-        statement(li);
-    }
-}
-void expression_statement(Lista *li)
-{
-    //verifica { opt
-    expression(li);
-    //verifica } opt
-    //verifica ;
-}
-void selection_statement(Lista *li)
-{
-    if ()
-    {
-        //verifica if
-        // verifica (
-        //verifica { opt
-        expression(li);
-        //verifica } opt
-        //verifica )
-        statement(li);
-        selection_statement1(li);
-    }
-    else if ()
-    {
-        // verifica switch
-        // verifica (
-        expression(li);
-        //verifica )
-        statement(li);
-    }
-    else
-    {
-    }
-}
-void selection_statement1(Lista *li)
-{
-    if ()
-    {
-        //verifica else
-        statement(li);
-    }
-}
-void iteration_statement(Lista *li)
-{
-    if ()
-    {
-        //verfica while
-        //verifica (
-        expression(li);
-        //verifica)
-        statement(li);
-    }
-    else if ()
-    {
-        //verifica "do"
-        statement(li);
-        //verifica while
-        //verifica (
-        expression(li)
-        //verifica  )
-        //verifica ;
-    }
-    else if ()
-    {
-        //verifica for
-        //verifica (
-        // verifica { opt
-        expression(li);
-        //verifica }
-        //verifica;
-        // verifica { opt
-        expression(li);
-        //verifica }
-        //verifica;// verifica { opt
-        expression(li);
-        //verifica }
-        //verifica )
-        statement(li);
-    }
-}
-void jump_statement(Lista *li)
-{
-    if ()
-    {
-        // verifica goto
-        // identificador
-    }
-    else if ()
-    {
-        //verifica continue
-        //verifica ;
-    }
-    else if ()
-    {
-        //verifica break
-        //verifica ;
-    }
-    else if ()
-    {
-        // verifica return
-        //{ opcional
-        expression(li);
-        //} opcional
-        //verifica ;
+        return true;
     }
 }

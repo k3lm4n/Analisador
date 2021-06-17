@@ -30,7 +30,7 @@ void analex(int estado)
     farq = fopen("arqtexto.txt", "r");
     FILE *pont_arq;
     pont_arq = fopen("LexTable.txt", "w");
-   
+
     char lexema[999] = "";
     char token[999] = "";
 
@@ -491,7 +491,7 @@ void analex(int estado)
             else if (strcmp(lexema, TOKSIGNED[0]) == 0)
             {
 
-                strcpy(token, TOKSIGNED[0]);
+                strcpy(token, TOKSIGNED[1]);
                 // add(LexTable, lex);
                 printf("%d \t%s   \t %s\n", linha, lexema, token);
                 fprintf(pont_arq, "%d %s %s\n", linha, lexema, token);
@@ -604,9 +604,18 @@ void analex(int estado)
                 fprintf(pont_arq, "%d %s %s\n", linha, lexema, token);
                 lexema[0] = '\0';
                 estado = 0;
-            }else if (strcmp(lexema, TOKMAIN[0]) == 0)
+            }
+            else if (strcmp(lexema, TOKMAIN[0]) == 0)
             {
                 strcpy(token, TOKMAIN[1]);
+                // add(LexTable, lex);
+                printf("%d \t%s   \t %s\n", linha, lexema, token);
+                fprintf(pont_arq, "%d %s %s\n", linha, lexema, token);
+                lexema[0] = '\0';
+                estado = 0;
+            }else if (strcmp(lexema, TOKFLOAT[0]) == 0)
+            {
+                strcpy(token, TOKFLOAT[1]);
                 // add(LexTable, lex);
                 printf("%d \t%s   \t %s\n", linha, lexema, token);
                 fprintf(pont_arq, "%d %s %s\n", linha, lexema, token);
@@ -1330,4 +1339,6 @@ void analex(int estado)
             break;
         }
     }
+    fclose(farq);
+    fclose(pont_arq);
 }
