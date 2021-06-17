@@ -151,29 +151,38 @@ void sintatico()
 
 void program(Lista *li)
 {
-    li = functions(li);
 
-    if (li == NULL)
-        printf("Verificacao completa\n");
-    else
-        printf("Verificacao incompleta\n");
+    while (li != NULL)
+    {
+        li = functions(li);
+        li = li->prox;
+    }
+
+    printf("Verificacao completa\n");
 }
 
 Lista *functions(Lista *li)
 {
-    printf(" functions %s\n", li->tab.lexema);
-    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0 || strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 || strcmp(li->tab.lexema, "void") == 0 || strcmp(li->tab.lexema, "double") == 0)
+
+    if (
+        strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0 || strcmp(li->tab.lexema, "int") == 0 ||
+        strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 ||
+        strcmp(li->tab.lexema, "void") == 0 || strcmp(li->tab.lexema, "double") == 0)
     {
 
         li = external(li);
         li = functions(li);
+    }
+    else
+    {
+        ;
     }
     return li;
 }
 
 Lista *external(Lista *li)
 {
-    printf("external %s\n", li->tab.lexema);
+
     if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
     {
         li = li->prox;
@@ -186,44 +195,9 @@ Lista *external(Lista *li)
     }
     return li;
 }
-Lista *type(Lista *li)
-{
-    printf("type %s\n", li->tab.lexema);
-    if (strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
-    {
-        li = li->prox;
-        return li;
-    }
-    
-}
-Lista *func(Lista *li)
-{
-
-    printf("func %s\n", li->tab.lexema);
-    li = f_args(li);
-    if (strcmp(li->tab.lexema, "{") != 0)
-    {
-        printf("Esperava \"{\" na linha %s\n", li->tab.linha);
-        li = li->prox;
-    }
-    else
-        li = li->prox;
-
-    li = dcls(li);
-    li = stmts(li);
-    if (strcmp(li->tab.lexema, "}") != 0)
-    {
-        printf("Esperava \"}\" na linha %s\n", li->tab.linha);
-        li = li->prox;
-    }
-    else
-        li = li->prox;
-    return li;
-}
 
 Lista *restoextern(Lista *li)
 {
-    printf("restoextern %s\n", li->tab.lexema);
     if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
     {
         li = li->prox;
@@ -234,15 +208,12 @@ Lista *restoextern(Lista *li)
         if (strcmp(li->tab.lexema, "*") != 0)
         {
             printf("Esperava \"*\" na linha %s\n", li->tab.linha);
-
-            li = li->prox;
         }
         else
             li = li->prox;
         if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
         {
             printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -250,10 +221,76 @@ Lista *restoextern(Lista *li)
     }
     return li;
 }
+Lista *type(Lista *li)
+{
 
+    if (strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "float") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
+    {
+        li = li->prox;
+        return li;
+    }
+}
+Lista *func(Lista *li)
+{
+
+    li = f_args(li);
+
+    if (strcmp(li->tab.lexema, "{") != 0)
+    {
+        printf("Esperava \"{\" na linha %s\n", li->tab.linha);
+    }
+    else
+        li = li->prox;
+
+    li = dcls(li);
+    li = stmts(li);
+    if (strcmp(li->tab.lexema, "}") != 0)
+    {
+        printf("Esperava \"}\" na linha %s\n", li->tab.linha);
+    }
+    else
+        li = li->prox;
+    return li;
+}
+Lista *f_args(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "(") != 0)
+    {
+        printf("Esperava \"(\" na linha %s\n", li->tab.linha);
+    }
+    else
+        li = li->prox;
+    li = restof_args(li);
+    return li;
+}
+Lista *restof_args(Lista *li)
+{
+    if (strcmp(li->tab.lexema, ")") == 0)
+    {
+        li = li->prox;
+    }
+    else
+    {
+        li = args(li);
+        if (strcmp(li->tab.lexema, ")") != 0)
+        {
+            printf("Esperava \")\" na linha %s\n", li->tab.linha);
+        }
+        else
+            li = li->prox;
+    }
+    return li;
+}
+Lista *args(Lista *li)
+{
+    li = type(li);
+    li = dclr(li);
+    li = restot_args(li);
+    return li;
+}
 Lista *restoextern2(Lista *li)
 {
-    printf("restoextern2 %s\n", li->tab.lexema);
+
     if (strcmp(li->tab.lexema, "{") == 0)
         li = func(li);
     else
@@ -266,7 +303,7 @@ Lista *restoextern2(Lista *li)
 
 Lista *restovars(Lista *li)
 {
-    printf("restovars %s\n", li->tab.lexema);
+
     if (strcmp(li->tab.lexema, ",") == 0)
     {
         li = li->prox;
@@ -279,7 +316,6 @@ Lista *restovars(Lista *li)
         {
             printf("Aqui\n");
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -291,6 +327,7 @@ Lista *funct(Lista *li)
 {
 
     li = f_args(li);
+
     if (strcmp(li->tab.lexema, "}") != 0)
     {
         li = li->prox;
@@ -298,7 +335,6 @@ Lista *funct(Lista *li)
     else
     {
         printf("Esperava \"{\" na linha %s\n", li->tab.linha);
-        li = li->prox;
     }
 
     li = dcls(li);
@@ -306,7 +342,6 @@ Lista *funct(Lista *li)
     if (strcmp(li->tab.lexema, "}") != 0)
     {
         printf("Esperava \"}\" na linha %s\n", li->tab.linha);
-        li = li->prox;
     }
     else
         li = li->prox;
@@ -365,8 +400,8 @@ Lista *stmt(Lista *li)
         li = li->prox;
         if (strcmp(li->tab.lexema, "(") != 0)
         {
+
             printf("Esperava \"(\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -374,7 +409,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ")") != 0)
         {
             printf("Esperava \")\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -387,7 +421,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, "(") != 0)
         {
             printf("Esperava \"(\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -395,7 +428,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ")") == 0)
         {
             printf("Esperava \")\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -403,11 +435,11 @@ Lista *stmt(Lista *li)
     }
     else if (strcmp(li->tab.lexema, "for") == 0)
     {
+        printf("aqui\n");
         li = li->prox;
         if (strcmp(li->tab.lexema, "(") != 0)
         {
             printf("Esperava \"(\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -415,7 +447,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -423,7 +454,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -432,7 +462,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ")") != 0)
         {
             printf("Esperava \")\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -450,7 +479,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -461,7 +489,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -480,7 +507,6 @@ Lista *stmt(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -500,7 +526,6 @@ Lista *restoreturn(Lista *li)
         if (strcmp(li->tab.lexema, ";") != 0)
         {
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -513,7 +538,6 @@ Lista *block(Lista *li)
     if (strcmp(li->tab.lexema, "{") != 0)
     {
         printf("Esperava \")\" na linha %s\n", li->tab.linha);
-        li = li->prox;
     }
     else
         li = li->prox;
@@ -521,7 +545,6 @@ Lista *block(Lista *li)
     if (strcmp(li->tab.lexema, "}") != 0)
     {
         printf("Esperava \")\" na linha %s\n", li->tab.linha);
-        li = li->prox;
     }
     else
         li = li->prox;
@@ -537,53 +560,27 @@ Lista *restoif(Lista *li)
     return li;
 }
 
-Lista *f_args(Lista *li)
-{
-    if (strcmp(li->tab.lexema, "(") != 0)
-    {
-        printf("Esperava \"(\" na linha %s\n", li->tab.linha);
-        li = li->prox;
-    }
-    else
-        li = li->prox;
-    li = restof_args(li);
-    return li;
-}
-
-Lista *restof_args(Lista *li)
-{
-    if (strcmp(li->tab.lexema, ")") == 0)
-    {
-        li = li->prox;
-    }
-    else
-    {
-        li = li->prox;
-
-        li = args(li);
-        if (strcmp(li->tab.lexema, ")") != 0)
-        {
-            printf("Esperava \")\" na linha %s\n", li->tab.linha);
-            li = li->prox;
-        }
-        li = li->prox;
-    }
-    return li;
-}
-
-Lista *args(Lista *li)
-{
-    li = type(li);
-    li = dclr(li);
-    li = restot_args(li);
-    return li;
-}
 Lista *dclr(Lista *li)
 {
     if (strcmp(li->tab.lexema, "TOKIDENTIFICADOR") == 0)
     {
         li = li->prox;
         li = restodclr(li);
+    }
+    else
+    {
+        if (strcmp(li->tab.lexema, "*") != 0)
+        {
+            printf("Esperava \"*\" na Linha %s\n", li->tab.linha);
+        }
+        else
+            li = li->prox;
+        if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
+        {
+            printf("Esperava \"IDENTIFICADOR\" na Linha %s\n", li->tab.linha);
+        }
+        else
+            li = li->prox;
     }
     return li;
 }
@@ -616,16 +613,19 @@ Lista *restodclr2(Lista *li)
     }
     else
     {
-        if (strcmp(li->tab.token, "TOK_NINT") == 0)
+        if (strcmp(li->tab.token, "TOK_NINT") != 0)
         {
-            li = li->prox;
+            printf("Esperava \"INT\" na Linha %s\n", li->tab.linha);
         }
         else
+            li = li->prox;
+        if (strcmp(li->tab.lexema, "]") != 0)
         {
             printf("Esperava \"]\" na linha %s\n", li->tab.linha);
+        }
+        else
             li = li->prox;
         }
-    }
     return li;
 }
 
@@ -678,7 +678,6 @@ Lista *restofator2(Lista *li)
         if (strcmp(li->tab.lexema, ")") != 0)
         {
             printf("Esperava \")\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -694,7 +693,6 @@ Lista *restolval(Lista *li)
         if (strcmp(li->tab.lexema, "]") != 0)
         {
             printf("Esperava \"]\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -1039,14 +1037,12 @@ Lista *lval(Lista *li)
         if (strcmp(li->tab.lexema, "*") != 0)
         {
             printf("Esperava \"*\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
         if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
         {
             printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -1108,7 +1104,6 @@ bool fator(Lista *li)
         if (strcmp(li->tab.lexema, ")") != 0)
         {
             printf("Esperava \"]\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -1129,7 +1124,6 @@ bool fator(Lista *li)
         if (strcmp(li->tab.token, "TOKIDENTIFICADOR") != 0)
         {
             printf("Esperava \"IDENTIFICADOR\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
@@ -1146,7 +1140,6 @@ bool restofator1(Lista *li)
         if (strcmp(li->tab.lexema, "]") != 0)
         {
             printf("Esperava \"]\" na linha %s\n", li->tab.linha);
-            li = li->prox;
         }
         else
             li = li->prox;
