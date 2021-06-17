@@ -68,7 +68,7 @@ void imp(Lista *li)
 
     while (aux != NULL)
     {
-        printf("%s\n", aux->tab.token);
+        printf("%s\n", aux->tab.lexema);
         aux = aux->prox;
     }
 }
@@ -145,7 +145,7 @@ void sintatico()
 {
     Lista *li = NULL;
     li = digital(li);
-    //imp(li);
+    imp(li);
     program(li);
 }
 
@@ -173,10 +173,7 @@ Lista *functions(Lista *li)
         li = external(li);
         li = functions(li);
     }
-    else
-    {
-        ;
-    }
+
     return li;
 }
 
@@ -229,6 +226,15 @@ Lista *type(Lista *li)
         li = li->prox;
         return li;
     }
+}
+Lista *dcls(Lista *li)
+{
+    if (strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
+    {
+        li = var(li);
+        li = dcls(li);
+    }
+    return li;
 }
 Lista *func(Lista *li)
 {
@@ -314,46 +320,10 @@ Lista *restovars(Lista *li)
     {
         if (strcmp(li->tab.lexema, ";") != 0)
         {
-            printf("Aqui\n");
             printf("Esperava \";\" na linha %s\n", li->tab.linha);
         }
         else
             li = li->prox;
-    }
-    return li;
-}
-
-Lista *funct(Lista *li)
-{
-
-    li = f_args(li);
-
-    if (strcmp(li->tab.lexema, "}") != 0)
-    {
-        li = li->prox;
-    }
-    else
-    {
-        printf("Esperava \"{\" na linha %s\n", li->tab.linha);
-    }
-
-    li = dcls(li);
-    li = stmts(li);
-    if (strcmp(li->tab.lexema, "}") != 0)
-    {
-        printf("Esperava \"}\" na linha %s\n", li->tab.linha);
-    }
-    else
-        li = li->prox;
-    return li;
-}
-
-Lista *dcls(Lista *li)
-{
-    if (strcmp(li->tab.lexema, "char") == 0 || strcmp(li->tab.lexema, "int") == 0 || strcmp(li->tab.lexema, "Lista *") == 0 || strcmp(li->tab.lexema, "double") == 0)
-    {
-        li = var(li);
-        li = dcls(li);
     }
     return li;
 }
@@ -435,7 +405,7 @@ Lista *stmt(Lista *li)
     }
     else if (strcmp(li->tab.lexema, "for") == 0)
     {
-        printf("aqui\n");
+
         li = li->prox;
         if (strcmp(li->tab.lexema, "(") != 0)
         {
@@ -562,7 +532,7 @@ Lista *restoif(Lista *li)
 
 Lista *dclr(Lista *li)
 {
-    if (strcmp(li->tab.lexema, "TOKIDENTIFICADOR") == 0)
+    if (strcmp(li->tab.token, "TOKIDENTIFICADOR") == 0)
     {
         li = li->prox;
         li = restodclr(li);
@@ -625,7 +595,7 @@ Lista *restodclr2(Lista *li)
         }
         else
             li = li->prox;
-        }
+    }
     return li;
 }
 
