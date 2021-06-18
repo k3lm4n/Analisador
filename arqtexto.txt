@@ -1,19 +1,72 @@
-int a(int c, int b){
 int d;
 int idade; 
 int c[10];
 int *d;
 int a[];
-a=a[1] + 10.e-1;
-a=a[2] + 10.e-3;
+for(i)1;i%5==0;i++)
+int v({
+int n1,n2,n3,i,r;
+a=a[1]+10;
+a=a[2]+10;
 c=d+b;
-c=d-b
+c=d-b;
 c=d/b;
 c=d%b;
 c=d*b;
-for(i=1;i%5==0;i++){
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

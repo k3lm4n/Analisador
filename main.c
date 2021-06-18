@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "analex.c"
-
+#include "analisadores.c"
 #include <string.h>
-#include "parser.c"
+
 
 int main()
 {
-  
-    analex(0);
-    sintatico();
+    Lista *li = NULL;
+    li = analex(0);
+    sintatico(li);
 }

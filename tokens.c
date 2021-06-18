@@ -40,7 +40,7 @@ const char *TOKPLUS[]={"+","TOKPLUS"};
 const char *TOKMENOS[]={"-","TOKMENOS"};
 const char *TOKDIV[]={"/","TOKDIV"};
 const char *TOKMUL[]={"*","TOKMUL"};
-const char *TOKMOD[]={"\%","TOKMOD"};
+const char *TOKMOD[]={"%","TOKMOD"};
 
 /*OPERADORES RELACIONAIS */
 
