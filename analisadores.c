@@ -2679,7 +2679,7 @@ bool fator(Lista *li)
         li = expr(li);
         if (strcmp(li->tab.lexema, ")") != 0)
         {
-            printf("Esperava \"]\" na linha %d , Mas encontrou-se %s\n", li->tab.linha,li->tab.lexema);
+            printf("Esperava \")\" na linha %d , Mas encontrou-se %s\n", li->tab.linha,li->tab.lexema);
         }
         else
             li = li->prox;

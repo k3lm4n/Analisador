@@ -3,7 +3,7 @@ int idade;
 int c[10];
 int *d;
 int a[];
-for(i)1;i%5==0;i++)
+for(i=1;i%5==0;i++)
 int v({
 int n1,n2,n3,i,r;
 a=a[1]+10;
