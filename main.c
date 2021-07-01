@@ -8,5 +8,5 @@ int main()
 {
     Lista *li = NULL;
     li = analex(0);
-    sintatico(li);
+    //sintatico(li);
 }

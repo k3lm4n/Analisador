@@ -11,7 +11,7 @@ void imp(Lista *li);
 Lista *digital(Lista *li);
 void sintatico(Lista *li);
 void program(Lista *li);
-Lista *functions(Lista *li);
+Lista *externs(Lista *li);
 Lista *external(Lista *li);
 Lista *func(Lista *li);
 Lista *restoextern(Lista *li);

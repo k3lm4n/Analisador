@@ -1,17 +1,15 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
-
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
       "args": [],
-      "stopAtEntry": true,
+      "stopAtEntry": false,
       "cwd": "c:\\Users\\Kelman\\Projects\\Analisador",
       "environment": [],
-      "program": "c:\\Users\\Kelman\\Projects\\Analisador\\main.exe ",
+      "program": "c:\\Users\\Kelman\\Projects\\Analisador\\build\\Debug\\outDebug",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "gdb",
       "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
